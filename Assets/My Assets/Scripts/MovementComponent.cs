@@ -5,12 +5,13 @@ using Pathfinding;
 public class MovementComponent : MonoBehaviour
 {
 
-    [SerializeField] private Transform targetPoint;
+    [SerializeField] private Vector3 targetPoint;
     [SerializeField] private float stopDistance;
+    [SerializeField] private float maxSpeed;
 
     private Seeker seeker;
     private Rigidbody2D rb;
-    private Transform target;
+    private Vector3 target;
 
     private bool isStopped;
 
@@ -25,13 +26,12 @@ public class MovementComponent : MonoBehaviour
         if (isStopped == true)
             return;
 
-        Vector3 dir = targetPoint.transform.position - transform.position;
+        Vector3 dir = targetPoint - transform.position;
 
         if (dir.magnitude <= stopDistance)
         {
             Debug.Log("Stop");
-            isStopped = true;
-            GetComponent<AIPath>().maxSpeed = 0f;
+            StopMovement();
         }
             
     }
@@ -40,8 +40,8 @@ public class MovementComponent : MonoBehaviour
     {
         seeker = GetComponent<Seeker>();
         rb = GetComponent<Rigidbody2D>();
-        isStopped = false;
-        seeker.StartPath(transform.position, targetPoint.transform.position, OnPathCompleted);
+        StopMovement();
+        //seeker.StartPath(transform.position, targetPoint.transform.position, OnPathCompleted);
         //ResetTarget();
     }
 
@@ -58,22 +58,17 @@ public class MovementComponent : MonoBehaviour
         }
     }
 
-    public void Stop()
+    public void StopMovement()
     {
-        //navMeshAgent.isStopped = true;
+        isStopped = true;
+        GetComponent<AIPath>().maxSpeed = 0f;
     }
 
-    public void Resume()
+    public void StartMovement()
     {
-        /*
-        if (!navMeshAgent.isActiveAndEnabled)
-        {
-            Debug.Log("Disabled");
-            return;
-        }
+        isStopped = false;
+        GetComponent<AIPath>().maxSpeed = maxSpeed;
 
-        navMeshAgent.isStopped = false;
-        */
     }
 
     public void SetTarget(Transform _target)
@@ -86,15 +81,17 @@ public class MovementComponent : MonoBehaviour
         */
     }
 
-    public Transform GetTarget()
+    public Vector3 GetTarget()
     {
         return target;
     }
 
 
-    public void SetTargetPoint(Transform _target)
+    public void SetTargetPoint(Vector3 _target)
     {
         targetPoint = _target;
+        seeker.StartPath(transform.position, targetPoint, OnPathCompleted);
+        StartMovement();
     }
 
     public void ResetTarget()
