@@ -9,10 +9,19 @@ public class TargetPointSetter : MonoBehaviour
 
     [SerializeField] private List<GameObject> selectedUnits;
 
+    private BoxSelector boxSelector;
+
+    private void Start()
+    {
+        boxSelector = gameObject.GetComponent<BoxSelector>();
+        selectedUnits = new List<GameObject>();
+    }
     private void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && Camera.main.GetComponent<CameraMovement>().OnActiveScreen())
         {
+            selectedUnits = boxSelector.SelectedUnits;
+
             Vector3 mousePosition = camera.ScreenToWorldPoint(Input.mousePosition);
             SetTargetPointToGroupOfUnits(mousePosition);
             /*
@@ -31,9 +40,13 @@ public class TargetPointSetter : MonoBehaviour
 
     private void SetTargetPointToGroupOfUnits(Vector3 targetpoint)
     {
-        foreach (GameObject unit in selectedUnits)
+        if (boxSelector.AnySelected)
         {
-            unit.GetComponent<MovementComponent>().SetTargetPoint(targetpoint);
+            foreach (GameObject unit in selectedUnits)
+            {
+                unit.GetComponent<MovementComponent>().SetTargetPoint(targetpoint);
+            }
+            boxSelector.Deselect();
         }
     }
 }

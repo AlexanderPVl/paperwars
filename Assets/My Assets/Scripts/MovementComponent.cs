@@ -30,7 +30,7 @@ public class MovementComponent : MonoBehaviour
 
         if (dir.magnitude <= stopDistance)
         {
-            Debug.Log("Stop");
+            //Debug.Log("Stop");
             StopMovement();
         }
             
@@ -68,7 +68,6 @@ public class MovementComponent : MonoBehaviour
     {
         isStopped = false;
         GetComponent<AIPath>().maxSpeed = maxSpeed;
-
     }
 
     public void SetTarget(Transform _target)
